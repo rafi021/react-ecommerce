@@ -17,33 +17,36 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
 import AdminHome from './pages/admin/AdminHome';
+import NotFound from './pages/NotFound.jsx'
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
       <Routes>
+        {/* AuthLayout */}
         <Route path='/' element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path='about' element={<About />} />
-          <Route path='collection' element={<Collection />} />
-          <Route path='contact' element={<Contact />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/collections' element={<Collection />} />
+          <Route path='/contact' element={<Contact />} />
         </Route>
-      </Routes>
 
-      <Routes>
+        <Route path='/' element={<AuthLayout />} >
+          <Route path='/login' element={<Login />} />
+          <Route path='register' element={<Register />} />
+        </Route>
+
+        {/* Admin Layout */}
         <Route path='/admin' element={<AdminLayout />}>
           <Route index element={<AdminHome />} />
         </Route>
-      </Routes>
 
-      <Routes>
-        <Route path='/auth' element={<AuthLayout />} >
-          <Route index element={<Login />} />
-          <Route path='register' element={<Register />} />
-        </Route>
-      </Routes>
+        {/* 404 Not Found */}
+        <Route path='*' element={<NotFound />} />
 
+
+      </Routes>
     </Router>
   </StrictMode>,
 )
