@@ -22,20 +22,26 @@ import AdminHome from './pages/admin/AdminHome';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
-      <Routes path='/' element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path='about' element={<About />} />
-        <Route path='collection' element={<Collection />} />
-        <Route path='contact' element={<Contact />} />
+      <Routes>
+        <Route path='/' element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path='about' element={<About />} />
+          <Route path='collection' element={<Collection />} />
+          <Route path='contact' element={<Contact />} />
+        </Route>
       </Routes>
 
-      <Routes path='/admin' element={<AdminLayout />}>
-        <Route index element={<AdminHome />} />
+      <Routes>
+        <Route path='/admin' element={<AdminLayout />}>
+          <Route index element={<AdminHome />} />
+        </Route>
       </Routes>
 
-      <Routes path='/auth' element={<AuthLayout />}>
-        <Route index element={<Login />} />
-        <Route path='register' element={<Register />} />
+      <Routes>
+        <Route path='/auth' element={<AuthLayout />} >
+          <Route index element={<Login />} />
+          <Route path='register' element={<Register />} />
+        </Route>
       </Routes>
 
     </Router>
