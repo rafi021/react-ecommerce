@@ -18,6 +18,8 @@ import Register from './pages/auth/Register';
 
 import AdminHome from './pages/admin/AdminHome';
 import NotFound from './pages/NotFound.jsx'
+import Products from './pages/admin/Products.jsx'
+import Orders from './pages/admin/Orders.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -27,19 +29,21 @@ createRoot(document.getElementById('root')).render(
         {/* AuthLayout */}
         <Route path='/' element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/collections' element={<Collection />} />
-          <Route path='/contact' element={<Contact />} />
+          <Route path='about' element={<About />} />
+          <Route path='collections' element={<Collection />} />
+          <Route path='contact' element={<Contact />} />
         </Route>
 
         <Route path='/' element={<AuthLayout />} >
-          <Route path='/login' element={<Login />} />
+          <Route path='login' element={<Login />} />
           <Route path='register' element={<Register />} />
         </Route>
 
         {/* Admin Layout */}
-        <Route path='/admin' element={<AdminLayout />}>
+        <Route path='admin' element={<AdminLayout />}>
           <Route index element={<AdminHome />} />
+          <Route path='products' element={<Products />} />
+          <Route path='orders' element={<Orders />} />
         </Route>
 
         {/* 404 Not Found */}
