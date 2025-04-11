@@ -50,6 +50,7 @@ const ImageViewer_Basic = ({
             src={thumbnailUrl || imageUrl}
             alt={`${imageTitle ?? "Image"} - Preview`}
             width="100%"
+            loading="lazy"
             height={300}
             className={cn(
               "rounded-lg object-cover transition-opacity hover:opacity-90",
