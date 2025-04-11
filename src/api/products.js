@@ -1,32 +1,79 @@
-export const getProducts = async (offset, limit) => {
-  const url = `https://api.escuelajs.co/api/v1/products?offset=${offset}&limit=${limit}`;
+// endpoint for pagination => https://api.escuelajs.co/api/v1/products?offset=0&limit=10
+// filtering => https://api.escuelajs.co/api/v1/products/?title=Generic&price_min=900&price_max=1000&categoryId=1
+// endpoint for all products => https://api.escuelajs.co/api/v1/products
+export const getProducts = async (
+  title = "",
+  offset = 0,
+  categoryId = undefined,
+  limit = 6,
+  price_min = 0,
+  price_max = Infinity
+) => {
+  let url = `https://api.escuelajs.co/api/v1/products/?limit=${limit}&offset=${offset}&title=${title}&price_min=${price_min}&price_max=${price_max}`;
 
-  // Fetch total count
-  const totalProductsRes = await fetch(
-    "https://api.escuelajs.co/api/v1/products",
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
+  if (categoryId) {
+    url = `https://api.escuelajs.co/api/v1/products/?limit=${limit}&offset=${offset}&title=${title}&price_min=${price_min}&price_max=${price_max}&categoryId=${categoryId}`;
+  }
+
+  console.log("url--->", url);
+
+  const totalProductRes = await fetch(
+    "https://api.escuelajs.co/api/v1/products"
   );
-  const totalData = await totalProductsRes.json();
-  const totalItems = totalData.length;
+  const totalProducts = await totalProductRes.json();
 
-  // Fetch paginated products and RETURN result
-  const productsRes = await fetch(url, {
-    method: "GET",
+  const totalItems = totalProducts?.length || 0;
+
+  const producutsRes = await fetch(url);
+
+  const products = await producutsRes.json();
+
+  return {
+    products,
+    totalItems,
+  };
+};
+
+// get all products
+export const getAllProducts = async () => {
+  const productsRes = await fetch("https://api.escuelajs.co/api/v1/products");
+  const products = await productsRes.json();
+  return products;
+};
+
+// create a product
+export const createProduct = async (product) => {
+  const res = await fetch("https://api.escuelajs.co/api/v1/products", {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(product),
   });
-  const productsData = await productsRes.json();
+  return res.json();
+};
 
-  console.log("Fetched Products --->", { products: productsData, totalItems });
+// update a product
+export const updateProduct = async (product) => {
+  console.log("product", product);
+  const res = await fetch(
+    `https://api.escuelajs.co/api/v1/products/${product.id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(product),
+    }
+  );
 
-  return {
-    products: productsData || [],
-    totalItems: totalItems || 0,
-  };
+  return res.json();
+};
+
+// delete a product
+export const deleteProduct = async (id) => {
+  const res = await fetch(`https://api.escuelajs.co/api/v1/products/${id}`, {
+    method: "DELETE",
+  });
+  return res.json();
 };

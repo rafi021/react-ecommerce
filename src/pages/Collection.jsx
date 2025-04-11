@@ -7,6 +7,10 @@ import FilterSideBar from "../components/commerce-ui/filter-sidebar";
 import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '../api/products';
 import { SkeletonCard } from './../components/commerce-ui/ProductSkeleton';
+import { Paginations } from '../components/commerce-ui/Paginations';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const categories = [
     { id: 1, name: "Electronics" },
@@ -15,13 +19,33 @@ const categories = [
     { id: 4, name: "Sports" },
 ];
 
-const offset = 0;
-const limit = 10;
+const limit = 6;
+
+const schema = z.object({
+    title: z.string().optional(),
+    offset: z.number(),
+    categoryId: z.number().optional(),
+  });
+
 const Collection = () => {
-    const productsQuery = useQuery({
-        queryKey: ['products', offset, limit],
-        queryFn: () => getProducts(offset, limit), // <-- Correct
-      })
+    const form = useForm({
+        resolver: zodResolver(schema),
+        defaultValues: {
+          title: "",
+          price_min:0,
+          price_max: 1000,
+          offset: 0,
+          categoryId: 1,
+        },
+      });
+
+      const { title, price_min, price_max, offset, categoryId } = form.watch();
+      console.log("hook form state", title, offset, price_min, price_max, categoryId);
+
+      const productsQuery = useQuery({
+        queryKey: ["products", title, offset, price_min, price_max, categoryId, limit],
+        queryFn: () => getProducts(title, offset, categoryId, limit, price_min, price_max),
+      });
 
       if (!productsQuery?.data?.totalItems) {
         return (
@@ -44,7 +68,7 @@ const Collection = () => {
                     <Button variant="outline">Open</Button>
                 </SheetTrigger>
 
-                <FilterSideBar categories={categories}/>
+                <FilterSideBar categories={categories} form={form} />
                 </div>
             {/** End of Filtering Section */}
 
@@ -73,6 +97,13 @@ const Collection = () => {
                             price={product.price}
                         />
                     ))}
+                    {/* Pagination */}
+                    <Paginations 
+                        offset={offset}
+                        setValue={form.setValue}
+                        limit={limit}
+                        total={productsQuery?.data?.totalItems}
+                    />
                 </div>
             </div>
         </Sheet>
