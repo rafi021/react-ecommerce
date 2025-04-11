@@ -1,47 +1,37 @@
-import { Slash } from "lucide-react"
 import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
     BreadcrumbList,
-    BreadcrumbPage,
     BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Link } from "react-router"
+} from "@/components/ui/breadcrumb";
+import { Slash } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
 
-const Breadcrumbs = ({
-    items = [],
-}) => {
+export default function BreadcrumbWithCustomSeparator({ items = [] }) {
     return (
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                    <BreadcrumbLink>
-                        <Link to="/">
-                            Home
-                        </Link>
-                    </BreadcrumbLink>
+                    <Link to="/">Home</Link>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator>
                     <Slash />
                 </BreadcrumbSeparator>
+
                 {items.map((item, index) => (
-                    <BreadcrumbItem key={index}>
-                        <BreadcrumbLink>
-                            <Link to={item.path}>
-                                {item.name}
-                            </Link>
-                        </BreadcrumbLink>
-                        {index < items.length - 1 && (
-                            <BreadcrumbSeparator>
-                                <Slash />
-                            </BreadcrumbSeparator>
-                        )}
-                    </BreadcrumbItem>
+                    <React.Fragment key={index}>
+                        <BreadcrumbItem>
+                            <Link to={item.path}>{item.name}</Link>
+                        </BreadcrumbItem>
+
+                        <BreadcrumbSeparator>
+                            <Slash />
+                        </BreadcrumbSeparator>
+                    </React.Fragment>
                 ))}
             </BreadcrumbList>
         </Breadcrumb>
-    )
+    );
 }
-
-export default Breadcrumbs

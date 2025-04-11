@@ -20,37 +20,45 @@ import AdminHome from './pages/admin/AdminHome';
 import NotFound from './pages/NotFound.jsx'
 import Products from './pages/admin/Products.jsx'
 import Orders from './pages/admin/Orders.jsx'
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Router>
-      <Routes>
-        {/* AuthLayout */}
-        <Route path='/' element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path='about' element={<About />} />
-          <Route path='collections' element={<Collection />} />
-          <Route path='contact' element={<Contact />} />
-        </Route>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          {/* AuthLayout */}
+          <Route path='/' element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path='about' element={<About />} />
+            <Route path='collections' element={<Collection />} />
+            <Route path='contact' element={<Contact />} />
+          </Route>
 
-        <Route path='/' element={<AuthLayout />} >
-          <Route path='login' element={<Login />} />
-          <Route path='register' element={<Register />} />
-        </Route>
+          <Route path='/' element={<AuthLayout />} >
+            <Route path='login' element={<Login />} />
+            <Route path='register' element={<Register />} />
+          </Route>
 
-        {/* Admin Layout */}
-        <Route path='admin' element={<AdminLayout />}>
-          <Route index element={<AdminHome />} />
-          <Route path='products' element={<Products />} />
-          <Route path='orders' element={<Orders />} />
-        </Route>
+          {/* Admin Layout */}
+          <Route path='admin' element={<AdminLayout />}>
+            <Route index element={<AdminHome />} />
+            <Route path='products' element={<Products />} />
+            <Route path='orders' element={<Orders />} />
+          </Route>
 
-        {/* 404 Not Found */}
-        <Route path='*' element={<NotFound />} />
+          {/* 404 Not Found */}
+          <Route path='*' element={<NotFound />} />
 
 
-      </Routes>
-    </Router>
-  </StrictMode>,
+        </Routes>
+      </Router>
+    </QueryClientProvider>
+  </StrictMode>
 )
