@@ -13,27 +13,37 @@ import {
     SheetFooter,
     SheetHeader,
     SheetTitle,
+    SheetClose
 } from "@/components/ui/sheet";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createProduct, updateProduct } from "../api/products"; // Adjust the import path as necessary
+import { useEffect } from "react";
 
 const schema = z.object({
+    id: z.number().optional(),
     title: z.string(),
     price: z.number(),
     description: z.string(),
     images: z.array(z.string()).optional(), // optional fieldz.string().optional(),
 });
 
-export default function CreateProduct() {
+export default function CreateProduct({
+    selectedProduct,
+    setSelectedProduct
+}) {
+    const queryClient = useQueryClient();
     const form = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
-            title: "",
-            price: 0,
-            description: "",
-            categoryId: 1,
-            images: [],
+            id: selectedProduct?.id || null,
+            title: selectedProduct?.title || "",
+            price: selectedProduct?.price || 0,
+            description: selectedProduct?.description || "",
+            categoryId: selectedProduct?.categoryId || 1,
+            images: selectedProduct?.images || [],
         },
     });
 
@@ -42,12 +52,55 @@ export default function CreateProduct() {
         name: "images",
     });
 
+    const { isSubmitting } = form.formState;
+
+    // mutation for creating product
+    const productMutation = useMutation({
+        mutationFn: () => createProduct(form.getValues()),
+        onSuccess: () => {
+            // Handle success (e.g., show a success message, redirect, etc.)
+            console.log("Product created successfully!");
+            queryClient.invalidateQueries({
+                queryKey: ["products"],
+            });
+        },
+    })
+
+    // mutation for updating product
+    const updateProductMutation = useMutation({
+        mutationFn: (data) => updateProduct(data),
+        onSuccess: () => {
+            // Handle success (e.g., show a success message, redirect, etc.)
+            console.log("Product updated successfully!");
+            queryClient.invalidateQueries({
+                queryKey: ["products"],
+            });
+        },
+    });
+
     const onSubmit = async (data) => {
         console.log(data);
-
-        // Reset form after submit
-        form.reset();
+        if (isSubmitting) return;
+        if (!selectedProduct) {
+            productMutation.mutate(); // Call the mutation to create the product
+        } else {
+            // Call the mutation to update the product
+            updateProductMutation.mutate(data);
+            setSelectedProduct(null);
+        }
     };
+
+    useEffect(() => {
+        if (selectedProduct) {
+            console.log("selectedProduct", selectedProduct);
+            form.setValue("images", selectedProduct.images);
+            form.setValue("title", selectedProduct.title);
+            form.setValue("description", selectedProduct.description);
+            form.setValue("price", selectedProduct.price);
+            form.setValue("categoryId", selectedProduct.category.id);
+            form.setValue("id", selectedProduct.id);
+        }
+    }, [selectedProduct, form]);
 
     return (
         <SheetContent>
@@ -143,7 +196,12 @@ export default function CreateProduct() {
                         </div>
                     </div>
                     <SheetFooter>
-                        <Button type="submit">Save changes</Button>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {selectedProduct ? "Update" : "Create"}
+                        </Button>
+                        <SheetClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </SheetClose>
                     </SheetFooter>
                 </form>
             </Form>
